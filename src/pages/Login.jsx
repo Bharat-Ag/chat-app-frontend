@@ -49,7 +49,7 @@ export default function Login() {
 
 
     return (
-        <div className="w-full min-h-screen  bg-[url('./src/assets/bgMain.jpg')] bg-cover bg-center flex justify-center items-center p-4">
+        <div className="w-full min-h-screen bg-main bg-cover bg-center flex justify-center items-center p-4">
             <div className="bg-white/10 backdrop-blur-[1px] p-4 rounded-2xl w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-6 shadow-2xl">
                 {/* Left Panel */}
                 <div className="hidden sm:flex flex-col justify-center items-center text-white text-center p-3">

@@ -142,7 +142,9 @@ button {
     }
 }
 
-
+.bg-main{
+    background: url(./assets/bgMain.jpg);
+}
 
 
 html,
