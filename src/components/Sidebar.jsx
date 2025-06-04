@@ -47,7 +47,7 @@ export default function Sidebar() {
                     <span className='font-bold ml-4 text-xl'>Chit-Chat</span>
                 </div>
                 <hr className='my-5 text-white/15' />
-                <div className='flex flex-col flex-grow-1'>
+                <div className='flex flex-col flex-grow-1 overflow-y-auto max-h[calc(100dvh-248px)]'>
                     {users?.map((user) => {
                         const isVisible = onlineVisibilityMap[user._id] ?? onlineUser.includes(user._id);
                         return (
@@ -71,6 +71,10 @@ export default function Sidebar() {
                             </div>
                         )
                     })}
+                </div>
+                <hr className='my-5 text-white/15' />
+                <div>
+                    <p className='text-[13px] text-red-400 leading-4'>** all chats will be cleared after logout so change the settings rona nai baad me</p>
                 </div>
             </div>
         </div>
