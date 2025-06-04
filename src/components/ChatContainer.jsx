@@ -229,7 +229,7 @@ export default function ChatContainer() {
     ) : (
         <>
             <div className='h-full pb-3'>
-                <div className='bg-white dark:bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg'>
+                <div className='bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg'>
                     <div className='flex items-center justify-center h-full'>
                         <button onClick={() => setTriggerSearch(true)} className=' bg-blue-400 w-fit rounded-full py-3 px-8 text-lg hover:bg-blue-500 transition-colors duration-150 font-semibold tracking-wide'>Start Chat</button>
                     </div>
