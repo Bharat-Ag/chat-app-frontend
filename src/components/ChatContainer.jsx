@@ -96,7 +96,7 @@ export default function ChatContainer() {
     if (isLoading) {
         return (
             <div className="h-full pb-3">
-                <div className='bg-white dark:bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg flex justify-center items-center'>
+                <div className='bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg flex justify-center items-center'>
                     <div className="loader">Loading...</div>
                 </div>
             </div>
@@ -106,7 +106,7 @@ export default function ChatContainer() {
     return selectedUser ? (
         <>
             <div className='h-full pb-3'>
-                <div className='bg-white dark:bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg flex flex-col'>
+                <div className='bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg flex flex-col'>
                     <div className='p-3 px-5 border-b-1 border-white/15'>
                         {/* ---header--- */}
                         <div className='flex items-center justify-between'>
