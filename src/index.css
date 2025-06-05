@@ -142,6 +142,24 @@ button {
     }
 }
 
-.bg-main{
+.bg-main {
     background: url(./assets/bgMain.jpg);
+}
+
+.wleMdl {
+    &.ant-modal {
+        max-width: 410px;
+        width: auto !important;
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        display: flex;
+        align-items: flex-end;
+
+        .ant-modal-content {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+    }
 }
