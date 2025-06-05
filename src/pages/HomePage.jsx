@@ -10,7 +10,7 @@ import ChangePassMdl from '../components/ChangePassMdl';
 import { Dropdown, ConfigProvider, Switch } from 'antd';
 import { UserActionContext } from '../context/UserActionContext';
 import { OnlineBullet } from '../assets/Icons/CustomIcon';
-import toast from 'react-hot-toast';
+import toast from 'react-hot-toast'; 
 
 export default function HomePage() {
     const [profileMenu, setProfileMenu] = useState(false)

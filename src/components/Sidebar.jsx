@@ -43,7 +43,7 @@ export default function Sidebar() {
         <div>
             <div className="p-5 flex flex-col h-full">
                 <div className='flex items-center'>
-{/*                     <img src={assets.mainLogo} alt="" className='max-w-10' /> */}
+                    {/*                     <img src={assets.mainLogo} alt="" className='max-w-10' /> */}
                     <span className='font-bold ml-4 text-xl'>Chat</span>
                 </div>
                 <hr className='my-5 text-white/15' />
