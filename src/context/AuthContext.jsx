@@ -3,6 +3,7 @@ import axios from "axios"
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client"
+// import { generateToken } from "../libs/firebase";
 
 export const AuthContext = createContext();
 
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
                 axios.defaults.headers.common['token'] = data.token
                 setToken(data.token)
                 localStorage.setItem('token', data.token)
-                toast.success(data.message)
+                toast.success(data.message, { duration: 3000, position: "top-right" })
                 return data;
             } else {
                 toast.error(data.message);
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(null);
         setOnlineUser([]);
         axios.defaults.headers.common['token'] = null;
-        toast.success('Logout successfully')
+        toast.success('Nikal Lau*e pehle fursat me', { duration: 3000 })
         socket.disconnect();
     }
 
