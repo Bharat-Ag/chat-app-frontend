@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { OnlineBullet } from '../assets/Icons/CustomIcon';
 import { Select } from 'antd';
 import { UserActionContext } from '../context/UserActionContext';
+import Tiptap from './Tiptap';
 
 export default function ChatContainer() {
     const { authUser, isLoading } = useContext(AuthContext);
@@ -16,27 +17,37 @@ export default function ChatContainer() {
     const [msgImages, setMsgImage] = useState([])
     const scrollEnd = useRef();
     const [input, setInput] = useState('')
+    const [editorInstance, setEditorInstance] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (input.trim() === '') return null;
-        await sendMessages({ text: input.trim() });
-        setInput('')
-    }
+        if (!editorInstance) return;
+
+        const html = editorInstance.getHTML().trim();
+        if (html === '' || html === '<p></p>') return;
+
+        const imgMatch = html.match(/<img.*?src="(.*?)".*?>/);
+        const imgSrc = imgMatch ? imgMatch[1] : null;
+
+        const payload = {};
+
+        if (imgSrc) payload.image = imgSrc;
+        if (html) payload.text = html;
+
+        await sendMessages(payload);
+        editorInstance.commands.clearContent();
+    };
 
     const hanldeSendImage = async (e) => {
         const file = e.target.files[0];
         if (!file || !file.type.startsWith('image/')) {
-            toast.error('Select an image file')
+            toast.error('Select an image file');
             return;
         }
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            await sendMessages({ image: reader.result })
-            e.target.value = '';
-        }
 
-        reader.readAsDataURL(file)
+        setSelectedImage(file);
+        e.target.value = '';
     }
 
     const handleChange = async (value, userId) => {
@@ -59,6 +70,9 @@ export default function ChatContainer() {
             console.error("Update rule error:", error);
             toast.error("Something went wrong");
         }
+    };
+    const handleEditorReady = (editor) => {
+        setEditorInstance(editor);
     };
 
 
@@ -84,6 +98,7 @@ export default function ChatContainer() {
         )
 
     }, [messages]);
+
 
 
     useEffect(() => {
@@ -168,40 +183,53 @@ export default function ChatContainer() {
                         <div className='p-3 px-5 flex flex-col h-[calc(100%-120px)] overflow-y-auto chatScorll flex-grow-1'>
                             {messages?.map((msg, index) => {
                                 return (
-                                    <div key={index}  >
+                                    <div key={index}>
                                         <div>
                                             <div className={`flex items-end gap-2 justify-end ${msg.senderId !== authUser._id && 'flex-row-reverse'}`}>
-                                                {msg.image ? (
-                                                    <img src={msg.image} alt="" className='max-w-[230px] border border-gray-700 rounded-lg outline-hidden mb-8' />
-                                                ) : (
-                                                    <>
-                                                        <p className={`p-2 md:max-w-[550px] xl:max-w-[700px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.senderId === authUser._id ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
-                                                    </>
-                                                )}
-                                                <div className={`text-center text-xs `}>
-                                                    <img src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon} alt="" className={`aspect-square rounded-full w-7 overflow-hidden ${msg.senderId !== authUser._id && 'ml-auto'}`} />
-                                                    <p className='text-gray-500 mt-2'>{formateTime(msg.createdAt)}</p>
+
+                                                <div className={`msg-show-box p-2 md:max-w-[550px] xl:max-w-[700px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white word ${msg.senderId === authUser._id ? 'rounded-br-none' : 'rounded-bl-none'}`}>
+
+                                                    {msg.image && (
+                                                        <img
+                                                            src={msg.image}
+                                                            alt=""
+                                                            className="max-w-[230px] mb-2 border border-gray-700 rounded-lg outline-hidden"
+                                                        />
+                                                    )}
+
+                                                    {msg.text && (
+                                                        <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
+                                                    )}
+                                                </div>
+
+                                                <div className="text-center text-xs">
+                                                    <img
+                                                        src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon}
+                                                        alt=""
+                                                        className={`aspect-square rounded-full w-7 overflow-hidden ${msg.senderId !== authUser._id && 'ml-auto'}`}
+                                                    />
+                                                    <p className="text-gray-500 mt-2">{formateTime(msg.createdAt)}</p>
                                                 </div>
                                             </div>
-                                            {/* <span><i class="fa-solid fa-ellipsis-vertical"></i></span> */}
                                         </div>
                                     </div>
-                                )
+                                );
                             })}
                             <div ref={scrollEnd}></div>
                         </div>
                         {/* ---Field--- */}
-                        <div className='flex-grow-1 p-2 px-5 max-h-[58px]'>
-                            <div className='h-full flex items-center justify-center  border border-white/15 rounded-sm px-3'>
-                                <input type="text"
+                        <div className='flex-grow-1 p-2 px-5 flex'>
+                            <div className='h-full flex items-start overflow-y-auto max-h-[200px] justify-center  border border-white/15 rounded-sm px-3 flex-grow-1'>
+                                {/* <input type="text"
                                     placeholder='Type message'
                                     className='h-full w-full outline-none text-sm pr-3'
                                     onChange={(e) => setInput(e.target.value)}
                                     value={input}
                                     name='input'
                                     autoComplete='off'
-                                    onKeyDown={(e) => e.key === "Enter" ? handleSendMessage(e) : null} />
-                                <input
+                                    onKeyDown={(e) => e.key === "Enter" ? handleSendMessage(e) : null} /> */}
+                                <Tiptap onEditorReady={handleEditorReady} />
+                                {/* <input
                                     type="file"
                                     onChange={hanldeSendImage}
                                     id='image'
@@ -209,9 +237,9 @@ export default function ChatContainer() {
                                 <label htmlFor="image">
                                     <img src={assets.gallery_icon} alt="" className='w-6 cursor-pointer' />
                                 </label>
-                                <span className='h-[35px] mb-[3px] self-end  w-[1px] bg-white/15 mx-2'></span>
-                                <img onClick={handleSendMessage} src={assets.send_button} alt="" className='w-6 cursor-pointer' />
+                                <span className='h-[35px] mb-[3px] self-end  w-[1px] bg-white/15 mx-2'></span> */}
                             </div>
+                            <img onClick={handleSendMessage} src={assets.send_button} alt="" className='ml-3 w-10 cursor-pointer self-baseline-last' />
                         </div>
                     </>) : (<div className='p-2 px-5 flex flex-col'>
                         <span className='text-3xl font-semibold block text-center mt-2'>Media</span>
