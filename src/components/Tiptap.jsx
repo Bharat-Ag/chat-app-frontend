@@ -2,8 +2,10 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useContext } from 'react'
 import Placeholder from '@tiptap/extension-placeholder'
+import { AuthContext } from '../context/AuthContext'
+import { ChatContext } from '../context/ChatContext'
 
 const extensions = [
     StarterKit,
@@ -50,11 +52,28 @@ const extensions = [
 
 const content = ``
 
-export default function Tiptap({ className = '', onEditorReady }) {
+export default function Tiptap({ className = '', onEditorReady, onCtrlEnter, onUpdate }) {
+    const { socket, authUser } = useContext(AuthContext)
+    const { selectedUser } = useContext(ChatContext)
+
     const editor = useEditor({
         extensions,
         content,
-        onCreate: ({ editor }) => onEditorReady?.(editor)
+        onCreate: ({ editor }) => onEditorReady?.(editor),
+        editorProps: {
+            handleKeyDown(view, event) {
+                if (event.ctrlKey && event.key === 'Enter') {
+                    event.preventDefault();
+                    onCtrlEnter?.();
+                    return true;
+                }
+                return false;
+            }
+        },
+        onUpdate: () => {
+            onUpdate && onUpdate(); // 💥 Call typing handler
+        },
+
     })
 
     // Paste handler to insert image from clipboard
@@ -98,10 +117,11 @@ export default function Tiptap({ className = '', onEditorReady }) {
         return null
     }
 
-    useEffect(() => {
+    useEffect((e) => {
         if (editor && onEditorReady) {
             onEditorReady(editor);
         }
+
     }, [editor, onEditorReady]);
 
 

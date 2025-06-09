@@ -3,7 +3,6 @@ import assets from '../assets/assets'
 import { ChatContext } from '../context/ChatContext'
 import { AuthContext } from '../context/AuthContext'
 import { OnlineBullet } from '../assets/Icons/CustomIcon'
-import DOMPurify from 'dompurify';
 import { stripHtml } from '../libs/utils'
 
 export default function Sidebar() {
@@ -63,7 +62,7 @@ export default function Sidebar() {
                                     <OnlineBullet state={isVisible ? "online" : "offline"} />
 
                                 </div>
-                                <div className='flex flex-col leading-5 flex-grow-1'>
+                                <div className='flex flex-col leading-5 flex-grow-1 select-none'>
                                     <p>{user.fullName}</p>
                                     <p className="text-gray-300 text-sm sidebar-lastext-show" >{plainText}</p>
                                 </div>

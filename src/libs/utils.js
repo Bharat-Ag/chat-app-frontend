@@ -18,3 +18,20 @@ export const stripHtml = (html) => {
 
     return text;
 }
+export const extractLinks = (html) => {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+
+    const anchors = Array.from(div.querySelectorAll("a"));
+
+    return anchors
+        .map(a => {
+            const href = a.getAttribute("href")?.trim();
+            const text = a.textContent?.trim();
+
+            if (!href || !text) return null;
+
+            return { text, href };
+        })
+        .filter(Boolean);
+};

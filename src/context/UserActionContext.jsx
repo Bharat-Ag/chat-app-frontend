@@ -31,6 +31,7 @@ export const UserActionProvider = ({ children }) => {
   const [changePassMdl, setChangePassMdl] = useState(false);
   const [profileMdl, setProfileMdl] = useState(false);
   const [showOnline, setShowOnline] = useState(true);
+  const [showRptMdl, setShowRptMdl] = useState(true);
 
 
   const changeOnlineStatus = async (bool) => {
@@ -123,6 +124,22 @@ export const UserActionProvider = ({ children }) => {
     }
   };
 
+
+  const deleteAllMessage = async (ccToken) => {
+    try {
+
+      const authToken = token || ccToken
+      await axios.delete('/api/messages/clear-all-on-logout', {
+        headers: {
+          token: authToken
+        },
+      })
+
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  }
+
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   useEffect(() => {
@@ -156,7 +173,7 @@ export const UserActionProvider = ({ children }) => {
     deleteRule,
     setDeleteRule,
     fetchDeleteRule,
-    changeDeleteRule, deleteMessages
+    changeDeleteRule, deleteMessages, showRptMdl, setShowRptMdl, deleteAllMessage
   };
 
   return (

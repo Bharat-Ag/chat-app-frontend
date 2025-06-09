@@ -1,27 +1,31 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import assets from "../assets/assets";
-import { formateTime } from '../libs/utils';
+import { extractLinks, formateTime } from '../libs/utils';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import toast from 'react-hot-toast';
 import { OnlineBullet } from '../assets/Icons/CustomIcon';
-import { Select } from 'antd';
+import { Select, Tooltip } from 'antd';
 import { UserActionContext } from '../context/UserActionContext';
 import Tiptap from './Tiptap';
+import useTypingStatus from '../hook/useTypingStatus';
 
 export default function ChatContainer() {
     const { authUser, isLoading } = useContext(AuthContext);
     const { fetchDeleteRule, deleteRule, setDeleteRule, changeDeleteRule, deleteMessages, } = useContext(UserActionContext)
-    const { messages, selectedUser, sendMessages, getMessages, setSelectedUser, setTriggerSearch } = useContext(ChatContext)
+    const { messages, selectedUser, sendMessages, getMessages, setSelectedUser, setTriggerSearch, unseenMessages } = useContext(ChatContext)
+    const { socket } = useContext(AuthContext)
     const [currTab, setCurrTab] = useState('Chat')
     const [msgImages, setMsgImage] = useState([])
     const scrollEnd = useRef();
-    const [input, setInput] = useState('')
     const [editorInstance, setEditorInstance] = useState(null);
-    const [selectedImage, setSelectedImage] = useState(null);
+    let typingTimeout;
+    const typingUserId = useTypingStatus(socket, selectedUser?._id);
+    const isTyping = typingUserId === selectedUser?._id;
+    const [sharedLinks, setSharedLinks] = useState([]);
 
     const handleSendMessage = async (e) => {
-        e.preventDefault();
+        if (e?.preventDefault) e.preventDefault();
         if (!editorInstance) return;
 
         const html = editorInstance.getHTML().trim();
@@ -42,13 +46,36 @@ export default function ChatContainer() {
     const hanldeSendImage = async (e) => {
         const file = e.target.files[0];
         if (!file || !file.type.startsWith('image/')) {
-            toast.error('Select an image file');
+            toast.error('Please select a valid image file.');
             return;
         }
 
-        setSelectedImage(file);
-        e.target.value = '';
-    }
+        const reader = new FileReader();
+
+        reader.onloadend = async () => {
+            try {
+                const base64String = reader.result;
+                await sendMessages({ image: base64String });
+                e.target.value = '';
+            } catch (error) {
+                toast.error('Failed to send image');
+            }
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+
+    const handleTyping = () => {
+        if (socket && selectedUser) {
+            socket.emit("typing", { senderId: authUser._id, receiverId: selectedUser._id });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                socket.emit("stopTyping", { senderId: authUser._id, receiverId: selectedUser._id });
+            }, 1500);
+        }
+    };
 
     const handleChange = async (value, userId) => {
         try {
@@ -67,7 +94,6 @@ export default function ChatContainer() {
                 setDeleteRule(updatedRule);
             }
         } catch (error) {
-            console.error("Update rule error:", error);
             toast.error("Something went wrong");
         }
     };
@@ -93,20 +119,19 @@ export default function ChatContainer() {
             });
         }
 
-        setMsgImage(
-            messages.filter(msg => msg.image).map(msg => msg.image)
-        )
+        setMsgImage(messages.filter(msg => msg.image).map(msg => msg.image))
+        const links = messages
+            .map(msg => extractLinks(msg.text || '')) // extractLinks returns array of { text, href }
+            .flat();
 
+        setSharedLinks(links);
     }, [messages]);
-
-
 
     useEffect(() => {
         document.title = selectedUser
-            ? `${selectedUser.fullName} | Chit-Chat`
+            ? `${unseenMessages && unseenMessages.length > 1 ? 'N' : ""} ${selectedUser.fullName} | Chit-Chat`
             : 'Chit-Chat';
-    }, [selectedUser]);
-
+    }, [selectedUser, unseenMessages]);
 
     if (isLoading) {
         return (
@@ -160,25 +185,19 @@ export default function ChatContainer() {
                                 }} className='rounded-full hover:bg-blue-600 px-3 py-1 flex items-center justify-center bg-blue-500 text-[12px]'>Clear Chat</button>
                             </div>
                             <div className=''>
-                                <button
-                                    type='button'
-                                    className={`font-bold text-md mr-6  ${currTab === 'Chat' ? 'text-blue-400 ' : 'text-white hover:text-white/85'}`}
-                                    onClick={() => setCurrTab('Chat')}
-                                >
-                                    Chat
-                                </button>
-                                <button
-                                    type='button'
-                                    className={`font-bold text-md  ${currTab === 'Media' ? 'text-blue-400 ' : 'text-white hover:text-white/85'}`}
-                                    onClick={() => setCurrTab('Media')}
-                                >
-                                    Media
-                                </button>
+                                {['Chat', 'Links', 'Media'].map(tab => (
+                                    <button
+                                        key={tab}
+                                        onClick={() => setCurrTab(tab)}
+                                        className={`font-bold text-md mr-6 ${currTab === tab ? 'text-blue-400' : 'text-white hover:text-white/85'}`}
+                                    >
+                                        {tab}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
-
-                    {currTab === 'Chat' ? (<>
+                    {currTab === 'Chat' && (<>
                         {/* ---Chat--- */}
                         <div className='p-3 px-5 flex flex-col h-[calc(100%-120px)] overflow-y-auto chatScorll flex-grow-1'>
                             {messages?.map((msg, index) => {
@@ -186,9 +205,7 @@ export default function ChatContainer() {
                                     <div key={index}>
                                         <div>
                                             <div className={`flex items-end gap-2 justify-end ${msg.senderId !== authUser._id && 'flex-row-reverse'}`}>
-
-                                                <div className={`msg-show-box p-2 md:max-w-[550px] xl:max-w-[700px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white word ${msg.senderId === authUser._id ? 'rounded-br-none' : 'rounded-bl-none'}`}>
-
+                                                <div className={`msg-show-box p-2 md:max-w-[550px] xl:max-w-[700px] md:text-sm font-light rounded-lg mb-8 break-all  text-white word ${msg.senderId === authUser._id ? 'rounded-br-none bg-[#7d44f8]' : 'rounded-bl-none bg-[#2a2a2a]'}`}>
                                                     {msg.image && (
                                                         <img
                                                             src={msg.image}
@@ -201,7 +218,6 @@ export default function ChatContainer() {
                                                         <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
                                                     )}
                                                 </div>
-
                                                 <div className="text-center text-xs">
                                                     <img
                                                         src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon}
@@ -212,36 +228,72 @@ export default function ChatContainer() {
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 );
                             })}
                             <div ref={scrollEnd}></div>
                         </div>
                         {/* ---Field--- */}
-                        <div className='flex-grow-1 p-2 px-5 flex'>
-                            <div className='h-full flex items-start overflow-y-auto max-h-[200px] justify-center  border border-white/15 rounded-sm px-3 flex-grow-1'>
-                                {/* <input type="text"
-                                    placeholder='Type message'
-                                    className='h-full w-full outline-none text-sm pr-3'
-                                    onChange={(e) => setInput(e.target.value)}
-                                    value={input}
-                                    name='input'
-                                    autoComplete='off'
-                                    onKeyDown={(e) => e.key === "Enter" ? handleSendMessage(e) : null} /> */}
-                                <Tiptap onEditorReady={handleEditorReady} />
-                                {/* <input
-                                    type="file"
-                                    onChange={hanldeSendImage}
-                                    id='image'
-                                    accept='image/png, image/jpeg' hidden />
-                                <label htmlFor="image">
-                                    <img src={assets.gallery_icon} alt="" className='w-6 cursor-pointer' />
-                                </label>
-                                <span className='h-[35px] mb-[3px] self-end  w-[1px] bg-white/15 mx-2'></span> */}
+                        <div className='flex-grow-1 p-2 px-5 flex relative flex-col'>
+                            <div className='block'>
+                                {/* <div className="text-[11px] -mt-2 text-gray-300 pl-1 py-[4px] -mb-0.5 bg-[#191919]">{selectedUser.fullName} is typing...</div> */}
+                                {isTyping && (
+                                    <div className="text-[11px] -mt-2 text-gray-300 pl-1 py-[4px] -mb-0.5 bg-[#191919]">{selectedUser.fullName} is typing...</div>
+                                )}
                             </div>
-                            <img onClick={handleSendMessage} src={assets.send_button} alt="" className='ml-3 w-10 cursor-pointer self-baseline-last' />
+                            <div className='flex-grow-1 flex relative'>
+                                <div className='h-full flex items-start overflow-y-auto max-h-[200px] justify-center  border border-white/15 rounded-sm px-3 flex-grow-1'>
+                                    <Tiptap onEditorReady={handleEditorReady} onCtrlEnter={handleSendMessage} onUpdate={handleTyping} />
+                                </div>
+                                <img onClick={handleSendMessage} src={assets.send_button} alt="" className='ml-3 w-8 cursor-pointer self-baseline-last' />
+                                <div className='w-8 aspect-square self-baseline-last ml-3 bg-[#2a2a2a] rounded-full relative overflow-hidden'>
+                                    <input
+                                        type="file"
+                                        id="files"
+                                        accept="image/*"
+                                        onChange={hanldeSendImage}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    <img
+                                        src={assets.gallery_icon}
+                                        alt="Select Image"
+                                        className="p-2 hover:-translate-y-0.5 cursor-pointer transition-transform duration-150"
+                                    />
+                                </div>
+
+                            </div>
                         </div>
-                    </>) : (<div className='p-2 px-5 flex flex-col'>
+                    </>)}
+                    {currTab === 'Links' && (<div className='p-2 px-5 flex flex-col'>
+                        <span className='text-3xl font-semibold block text-center mt-2'>Links</span>
+                        <div className='grid mediaContainer gap-5 mt-4 max-h-[calc(100dvh-195px)] overflow-y-auto'>
+                            {sharedLinks.length === 0 ? (
+                                <p className="text-sm text-gray-400 mt-5">No links shared yet.</p>
+                            ) : (
+                                <>
+                                    {sharedLinks.map((link, idx) => (
+                                        <div key={idx}>
+                                            <a
+                                                href={link.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-400 hover:underline break-all flex bg-[#121212] rounded-lg p-1"
+                                            >
+                                                <div className='p-2'>
+                                                    <i className="fa-solid fa-link"></i>
+                                                </div>
+                                                <span className='p-2'>
+                                                    {link.text}
+                                                </span>
+                                            </a>
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                        </div>
+                    </div>)}
+                    {currTab === 'Media' && (<div className='p-2 px-5 flex flex-col'>
                         <span className='text-3xl font-semibold block text-center mt-2'>Media</span>
                         <div className='grid mediaContainer gap-5 mt-4 max-h-[calc(100dvh-195px)] overflow-y-auto'>
                             {msgImages.map((img, index) => (
@@ -251,7 +303,7 @@ export default function ChatContainer() {
                             ))}
                         </div>
                     </div>)}
-                </div>
+                </div >
             </div >
         </>
     ) : (

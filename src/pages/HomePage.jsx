@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import assets from '../assets/assets'
 import ChatContainer from '../components/ChatContainer';
@@ -10,13 +10,14 @@ import ChangePassMdl from '../components/ChangePassMdl';
 import { Dropdown, ConfigProvider, Switch } from 'antd';
 import { UserActionContext } from '../context/UserActionContext';
 import { OnlineBullet } from '../assets/Icons/CustomIcon';
-import toast from 'react-hot-toast'; 
+import toast from 'react-hot-toast';
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 export default function HomePage() {
     const [profileMenu, setProfileMenu] = useState(false)
     const [modlOpen, setModlOpen] = useState(false);
-    const { setChangePassMdl, setProfileMdl, setShowOnline, showOnline, changeOnlineStatus } = useContext(UserActionContext);
-    const { authUser, socket } = useContext(AuthContext);
+    const { setChangePassMdl, setProfileMdl, setShowOnline, showOnline, changeOnlineStatus, deleteAllMessage } = useContext(UserActionContext);
+    const { authUser, socket, token } = useContext(AuthContext);
 
     const handleLogout = () => {
         setModlOpen(true)
@@ -50,9 +51,16 @@ export default function HomePage() {
             userId: authUser._id,
             isOnlineVisible: val,
         });
-        toast(val ? "Online hai tu jh**tu" : "Ban gya cool offline hoke", { duration: 2000 });
+        toast(val ? "Online hai tu" : "Ban gya cool offline hoke", { duration: 2000 });
     };
 
+    useEffect(() => {
+        const handleUnload = () => deleteAllMessage(token)
+        window.addEventListener('unload', handleUnload);
+        return () => {
+            window.removeEventListener('unload', handleUnload);
+        };
+    }, []);
 
     return (
         <>
@@ -62,7 +70,9 @@ export default function HomePage() {
             <div className='w-full h-screen'>
                 <div className="h-full flex flex-col">
                     <div className='p-2 flex items-center'>
-                        <div className="flex-grow-1"></div>
+                        <div className="flex-grow-1">
+                            <span className='text-[14px] pl-5 hover:text-blue-400 cursor-pointer'>Report an issue</span>
+                        </div>
                         <div className="max-w-[550px] w-full">
                             <UserListSelct />
                         </div>
@@ -94,10 +104,24 @@ export default function HomePage() {
                             </div>
                         </div>
                     </div>
-                    <div className={`flex-grow-1 overflow-hidden grid relative md:grid-cols-[1fr_3fr]`}>
+                    {/* <div className={`flex-grow-1 overflow-hidden grid relative md:grid-cols-[1fr_3fr]`}>
                         <Sidebar />
                         <ChatContainer />
-                    </div>
+                    </div> */}
+                    {/* <PanelGroup direction="horizontal" onLayout={onLayout}>
+                        <Panel defaultSize={defaultLayout[0]}> <Sidebar /></Panel>
+                        <PanelResizeHandle className="w-2 bg-blue-800" />
+                        <Panel defaultSize={defaultLayout[1]}><ChatContainer /></Panel>
+                    </PanelGroup> */}
+                    <PanelGroup autoSaveId="example" direction="horizontal">
+                        <Panel collapsible={true} defaultSize={25} maxSize={25}>
+                            <Sidebar />
+                        </Panel>
+                        <PanelResizeHandle />
+                        <Panel defaultSize={25}>
+                            <ChatContainer />
+                        </Panel>
+                    </PanelGroup>
                 </div>
             </div>
         </>
