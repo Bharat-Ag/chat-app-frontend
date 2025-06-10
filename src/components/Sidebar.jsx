@@ -1,9 +1,10 @@
 import { useContext, useEffect } from 'react'
-import assets from '../assets/assets'
 import { ChatContext } from '../context/ChatContext'
 import { AuthContext } from '../context/AuthContext'
-import { OnlineBullet } from '../assets/Icons/CustomIcon'
-import { stripHtml } from '../libs/utils'
+import { Collapse } from 'antd'
+import AllUserTab from './sidebar/AllUserTab'
+import { CarrotIcon } from '../assets/Icons/CustomIcon'
+import PinnedUserTab from './sidebar/PinnedUserTab'
 
 export default function Sidebar() {
     const { getUsers, users, setSelectedUser, unseenMessages, setUnseenMessages, setUsers, selectedUser, lastMessages } = useContext(ChatContext)
@@ -39,8 +40,22 @@ export default function Sidebar() {
     }, [isLoading]);
 
 
+    const items = [
+        {
+            key: '0',
+            label: 'Pinned',
+            children: <PinnedUserTab key={'All Users'} />
+        },
+        {
+            key: '1',
+            label: 'All User',
+            children: <AllUserTab key={'Pinned Users'} />
+        },
+    ];
+
+
     return (
-        <div>
+        <div className='h-full'>
             <div className="p-5 flex flex-col h-full max-w-[480px]">
                 <div className='flex items-center'>
                     {/*                     <img src={assets.mainLogo} alt="" className='max-w-10' /> */}
@@ -48,28 +63,13 @@ export default function Sidebar() {
                 </div>
                 <hr className='my-5 text-white/15' />
                 <div className='flex flex-col flex-grow-1 overflow-y-auto max-h[calc(100dvh-248px)]'>
-                    {users?.map((user) => {
-                        const isVisible = onlineVisibilityMap[user._id] ?? onlineUser.includes(user._id);
-                        const plainText = stripHtml(lastMessages[user._id]?.text || "No message yet");
-                        return (
-                            <div onClick={() => {
-                                setSelectedUser(user);
-                                setUnseenMessages(prev => ({ ...prev, [user._id]: 0 }))
-                                setLoading(true)
-                            }} key={user._id} className={`rounded-lg flex items-center relative gap-2 p-2 pl-4 cursor-pointer max-sm:text-sm  ${selectedUser && user._id === selectedUser._id ? 'bg-[#222] rounded-lg ' : 'hover:bg-[#1f2d3a]'}`}>
-                                <div className='relative'>
-                                    <img src={user?.profilePic || assets.avatar_icon} alt="" className='rounded-full w-[40px] aspect-square min-w-[40px]' />
-                                    <OnlineBullet state={isVisible ? "online" : "offline"} />
-
-                                </div>
-                                <div className='flex flex-col leading-5 flex-grow-1 select-none'>
-                                    <p>{user.fullName}</p>
-                                    <p className="text-gray-300 text-sm sidebar-lastext-show" >{plainText}</p>
-                                </div>
-                                {unseenMessages[user._id] > 0 && <p className='absolute top-4 right-4 text-xs w-5 aspect-square flex justify-center items-center rounded-full bg-violet-500/50'>{unseenMessages[user._id]}</p>}
-                            </div>
-                        )
-                    })}
+                    <Collapse
+                        expandIcon={({ isActive }) => <CarrotIcon rotate={isActive ? 90 : 0} />}
+                        bordered={false}
+                        items={items}
+                        className='colbs-user'
+                        defaultActiveKey={['1']}
+                    />
                 </div>
                 <hr className='my-5 text-white/15' />
                 <div>

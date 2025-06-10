@@ -64,33 +64,26 @@ button {
   border: 1px solid rgba(221, 221, 221, 0.2901960784);
   color: #fff;
 }
-
 .theme-dd-ovr.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
   color: #fff;
   padding-block: 7px;
 }
-
 .theme-dd-ovr.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item:hover {
   background: #101010;
   color: #51a5ff;
 }
-
 .theme-dd-ovr.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-divider {
   background-color: rgba(255, 255, 255, 0.0588235294);
 }
-
 .theme-dd-ovr.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-group-title {
   color: #fff;
 }
-
 .theme-dd-ovr .ant-dropdown-menu-item-group-list .ant-dropdown-menu-item {
   padding-inline: 0;
 }
-
 .theme-dd-ovr .ant-dropdown-menu-item-group-list .ant-dropdown-menu-item:nth-of-type(1):hover {
   background: transparent !important;
 }
-
 .theme-dd-ovr.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-title-content {
   color: #fff;
 }
@@ -103,15 +96,12 @@ button {
 .onlineSwitch.ant-switch {
   background-color: #585858;
 }
-
 .onlineSwitch.ant-switch:hover {
   background-color: #585858;
 }
-
 .onlineSwitch.ant-switch.ant-switch-checked {
   background: rgb(3, 160, 3);
 }
-
 .onlineSwitch.ant-switch.ant-switch-checked:hover {
   background: green;
 }
@@ -121,11 +111,9 @@ button {
   color: #fff;
   border-radius: 20px;
 }
-
 .themeSelect.ant-select .ant-select-arrow {
   color: #fff;
 }
-
 .themeSelect.ant-select-single.ant-select-open .ant-select-selection-item {
   color: #fff;
 }
@@ -143,7 +131,6 @@ button {
   display: flex;
   align-items: flex-end;
 }
-
 .wleMdl.ant-modal .ant-modal-content {
   background: #fff;
   padding: 15px;
@@ -154,11 +141,9 @@ button {
   outline: none;
   font-size: 14px;
 }
-
 .custom-editor .tiptap a {
   color: #97c3ff;
 }
-
 .custom-editor p.is-editor-empty::before {
   content: attr(data-placeholder);
   color: #999;
@@ -166,7 +151,6 @@ button {
   height: 0;
   pointer-events: none;
 }
-
 .custom-editor img {
   border-radius: 5px;
 }
@@ -182,9 +166,19 @@ a {
   -webkit-box-orient: vertical;
   word-break: break-all;
 }
-
 .sidebar-lastext-show a {
   color: #fff;
 }
 
-/*# sourceMappingURL=index.css.map */
+.colbs-user .ant-collapse-header-text {
+  color: #fff !important;
+}
+.colbs-user .ant-collapse-expand-icon {
+  color: #fff !important;
+}
+.colbs-user.ant-collapse-borderless > .ant-collapse-item {
+  border-bottom: 0;
+}
+.colbs-user .ant-collapse-item-active .ant-collapse-expand-icon svg {
+  rotate: 90deg;
+}/*# sourceMappingURL=index.css.map */

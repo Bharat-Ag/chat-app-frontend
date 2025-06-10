@@ -32,7 +32,29 @@ export const UserActionProvider = ({ children }) => {
   const [profileMdl, setProfileMdl] = useState(false);
   const [showOnline, setShowOnline] = useState(true);
   const [showRptMdl, setShowRptMdl] = useState(true);
+  const [pinnedUser, setPinnedUser] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const local = localStorage.getItem("pinnedUser");
+      return local ? JSON.parse(local) : [];
+    }
+    return [];
+  });
+  // Save to localStorage whenever updated
+  const updatePinnedUser = (list) => {
+    setPinnedUser(list);
+    localStorage.setItem("pinnedUser", JSON.stringify(list));
+  };
+  const pinUser = (userId) => {
+    if (!pinnedUser.includes(userId)) {
+      updatePinnedUser([...pinnedUser, userId]);
+    }
+  };
 
+  // Unpin user
+  const unpinUser = (userId) => {
+    const updated = pinnedUser.filter(id => id !== userId);
+    updatePinnedUser(updated);
+  };
 
   const changeOnlineStatus = async (bool) => {
     try {
@@ -161,7 +183,6 @@ export const UserActionProvider = ({ children }) => {
     }
   }, [token, authUser, isSocketConnected]);
 
-
   const value = {
     changePassMdl,
     setChangePassMdl,
@@ -173,7 +194,8 @@ export const UserActionProvider = ({ children }) => {
     deleteRule,
     setDeleteRule,
     fetchDeleteRule,
-    changeDeleteRule, deleteMessages, showRptMdl, setShowRptMdl, deleteAllMessage
+    changeDeleteRule, deleteMessages, showRptMdl, setShowRptMdl, deleteAllMessage, pinnedUser,
+    pinUser, unpinUser,
   };
 
   return (

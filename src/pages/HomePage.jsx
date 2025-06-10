@@ -51,7 +51,7 @@ export default function HomePage() {
             userId: authUser._id,
             isOnlineVisible: val,
         });
-        toast(val ? "Online hai tu" : "Ban gya cool offline hoke", { duration: 2000 });
+        toast(val ? "Online hai tu ab chal" : "Ban gya cool offline hoke", { duration: 2000 });
     };
 
     useEffect(() => {
@@ -67,7 +67,7 @@ export default function HomePage() {
             <ChangePassMdl />
             <ProfileMdl />
             <LogoutMdl setOpen={setModlOpen} open={modlOpen} />
-            <div className='w-full h-screen'>
+            <div className='w-full h-screen' onContextMenu={(e) => e.preventDefault()}>
                 <div className="h-full flex flex-col">
                     <div className='p-2 flex items-center'>
                         <div className="flex-grow-1">
@@ -117,7 +117,7 @@ export default function HomePage() {
                         <Panel collapsible={true} defaultSize={25} maxSize={25}>
                             <Sidebar />
                         </Panel>
-                        <PanelResizeHandle />
+                        <PanelResizeHandle className="w-1.5 rounded hover:bg-blue-500 data-[resize-handle-state=drag]:bg-blue-500" />
                         <Panel defaultSize={25}>
                             <ChatContainer />
                         </Panel>
