@@ -1,0 +1,223 @@
+* {
+    font-family: "Outfit", sans-serif;
+}
+
+html,
+body {
+    background: #0a0a0a;
+    color: #fff;
+    transition: background .2s, color .2s;
+}
+
+::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+.chatScorll::-webkit-scrollbar {
+    width: 6px;
+    visibility: hidden;
+}
+
+.chatScroll:hover::-webkit-scrollbar {
+    visibility: visible;
+}
+
+.chatScorll::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 20px;
+}
+
+.custom-white-spinner .ant-spin-dot-item {
+    background-color: white !important;
+}
+
+.ant-modal .ant-modal-content {
+    padding: 0;
+    background: transparent;
+}
+
+.ant-modal-close {
+    color: #fff !important;
+}
+
+.mediaContainer {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.themeSearch.ant-select-show-search:where(.css-dev-only-do-not-override-5uvb3z).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background: #191919;
+    color: #fff;
+    border: 0;
+}
+
+.themeSearch.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+    color: #868686;
+}
+
+.theme-dd-ovr {
+    .ant-dropdown-menu {
+        background: #191919;
+        border: 1px solid #dddddd4a;
+        color: #fff;
+    }
+
+    &.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
+        color: #fff;
+        padding-block: 7px;
+    }
+
+    &.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item:hover {
+        background: #101010;
+        color: #51a5ff;
+    }
+
+    &.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-divider {
+        background-color: #ffffff0f;
+    }
+
+    &.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-group-title {
+        color: #fff;
+    }
+
+    .ant-dropdown-menu-item-group-list {
+        .ant-dropdown-menu-item {
+            padding-inline: 0;
+
+            &:nth-of-type(1):hover {
+                background: transparent !important;
+            }
+        }
+    }
+
+    &.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-title-content {
+        color: #fff;
+    }
+}
+
+.settin-dd-ovr {
+    width: 100%;
+    max-width: 150px;
+}
+
+.onlineSwitch {
+    &.ant-switch {
+        background-color: #585858;
+
+        &:hover {
+            background-color: #585858;
+
+        }
+    }
+
+    &.ant-switch.ant-switch-checked {
+        background: rgb(3, 160, 3);
+
+        &:hover {
+            background: green;
+
+        }
+    }
+}
+
+.themeSelect {
+    &.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+        background: #1a1a1a;
+        color: #fff;
+        border-radius: 20px;
+    }
+
+    &.ant-select .ant-select-arrow {
+        color: #fff;
+    }
+
+    &.ant-select-single.ant-select-open .ant-select-selection-item {
+        color: #fff;
+    }
+}
+
+.bg-main {
+    background: url(./assets/bgMain.jpg);
+}
+
+.wleMdl {
+    &.ant-modal {
+        max-width: 410px;
+        width: auto !important;
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        display: flex;
+        align-items: flex-end;
+
+        .ant-modal-content {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+    }
+}
+
+.custom-editor {
+    .tiptap {
+        outline: none;
+        font-size: 14px;
+
+        a {
+            color: #97c3ff;
+        }
+    }
+
+    p.is-editor-empty::before {
+        content: attr(data-placeholder);
+        color: #999;
+        float: left;
+        height: 0;
+        pointer-events: none;
+    }
+
+    img {
+        border-radius: 5px;
+    }
+}
+
+a {
+    color: #97c3ff;
+}
+
+.sidebar-lastext-show {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+
+    a {
+        color: #fff;
+    }
+}
+
+.colbs-user {
+    .ant-collapse-header-text {
+        color: #fff !important;
+    }
+
+    .ant-collapse-expand-icon {
+        color: #fff !important;
+    }
+
+    &.ant-collapse-borderless>.ant-collapse-item {
+        border-bottom: 0;
+    }
+    .ant-collapse-item-active{
+        .ant-collapse-expand-icon{
+            svg{
+                rotate: 90deg;
+            }
+        }
+    }
+}
