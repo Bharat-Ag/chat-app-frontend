@@ -213,11 +213,16 @@ a {
     &.ant-collapse-borderless>.ant-collapse-item {
         border-bottom: 0;
     }
-    .ant-collapse-item-active{
-        .ant-collapse-expand-icon{
-            svg{
+
+    .ant-collapse-item-active {
+        .ant-collapse-expand-icon {
+            svg {
                 rotate: 90deg;
             }
         }
+    }
+
+    &.ant-collapse .ant-collapse-content>.ant-collapse-content-box {
+        padding: 0;
     }
 }
