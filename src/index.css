@@ -181,4 +181,7 @@ a {
 }
 .colbs-user .ant-collapse-item-active .ant-collapse-expand-icon svg {
   rotate: 90deg;
+}
+.colbs-user.ant-collapse .ant-collapse-content > .ant-collapse-content-box {
+  padding: 0;
 }/*# sourceMappingURL=index.css.map */
