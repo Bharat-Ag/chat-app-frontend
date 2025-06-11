@@ -32,6 +32,7 @@ export const UserActionProvider = ({ children }) => {
   const [profileMdl, setProfileMdl] = useState(false);
   const [showOnline, setShowOnline] = useState(true);
   const [showRptMdl, setShowRptMdl] = useState(true);
+  const [showUserDtMdl, setShowUserDtMdl] = useState(false);
   const [pinnedUser, setPinnedUser] = useState(() => {
     if (typeof window !== 'undefined') {
       const local = localStorage.getItem("pinnedUser");
@@ -194,7 +195,7 @@ export const UserActionProvider = ({ children }) => {
     setDeleteRule,
     fetchDeleteRule,
     changeDeleteRule, deleteMessages, showRptMdl, setShowRptMdl, deleteAllMessage, pinnedUser,
-    pinUser, unpinUser,
+    pinUser, unpinUser, showUserDtMdl, setShowUserDtMdl
   };
 
   return (

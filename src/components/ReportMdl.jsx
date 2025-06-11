@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { UserActionContext } from '../context/UserActionContext';
+import { Modal } from 'antd';
 
 export default function ReportMdl() {
     const { showRptMdl, setShowRptMdl } = useContext(UserActionContext);

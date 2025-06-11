@@ -12,6 +12,8 @@ import { UserActionContext } from '../context/UserActionContext';
 import { OnlineBullet } from '../assets/Icons/CustomIcon';
 import toast from 'react-hot-toast';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import ShowUserProfileMdl from '../components/ShowUserProfileMdl';
+import UserImage from '../components/UserImage';
 
 export default function HomePage() {
     const [profileMenu, setProfileMenu] = useState(false)
@@ -55,7 +57,11 @@ export default function HomePage() {
     };
 
     useEffect(() => {
-        const handleUnload = () => deleteAllMessage(token)
+        const handleUnload = () => {
+            deleteAllMessage(token)
+            changeOnlineStatus(false);
+        }
+
         window.addEventListener('unload', handleUnload);
         return () => {
             window.removeEventListener('unload', handleUnload);
@@ -66,6 +72,7 @@ export default function HomePage() {
         <>
             <ChangePassMdl />
             <ProfileMdl />
+            <ShowUserProfileMdl />
             <LogoutMdl setOpen={setModlOpen} open={modlOpen} />
             <div className='w-full h-screen' onContextMenu={(e) => e.preventDefault()}>
                 <div className="h-full flex flex-col">
@@ -96,8 +103,7 @@ export default function HomePage() {
                                 <div className="relative w-fit h-fit">
                                     <Dropdown className='theme-dd' menu={{ items }} overlayClassName="theme-dd-ovr" trigger={['click']}>
                                         <div>
-                                            <img src={authUser.profilePic || assets.avatar_icon} alt="" className={`w-8 h-8 rounded-full cursor-pointer hover:ring-4 hover:ring-gray-700 transition duration-200 `} onClick={() => setProfileMenu(!profileMenu)} />
-                                            <OnlineBullet state={`${showOnline ? 'online' : 'offline'}`} />
+                                            <UserImage fontSz='15' user={authUser} bubbleSize='32' className=" cursor-pointer hover:ring-4 hover:ring-gray-500 transition duration-200" clickFunc={() => setProfileMenu(!profileMenu)} />
                                         </div>
                                     </Dropdown>
                                 </div>
@@ -108,11 +114,6 @@ export default function HomePage() {
                         <Sidebar />
                         <ChatContainer />
                     </div> */}
-                    {/* <PanelGroup direction="horizontal" onLayout={onLayout}>
-                        <Panel defaultSize={defaultLayout[0]}> <Sidebar /></Panel>
-                        <PanelResizeHandle className="w-2 bg-blue-800" />
-                        <Panel defaultSize={defaultLayout[1]}><ChatContainer /></Panel>
-                    </PanelGroup> */}
                     <PanelGroup autoSaveId="example" direction="horizontal">
                         <Panel collapsible={true} defaultSize={20} maxSize={23}>
                             <Sidebar />

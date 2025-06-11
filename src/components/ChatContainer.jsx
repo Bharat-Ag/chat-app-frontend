@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import assets from "../assets/assets";
 import { extractLinks, formateTime } from '../libs/utils';
 import { AuthContext } from '../context/AuthContext';
@@ -9,10 +9,11 @@ import { Select, Tooltip } from 'antd';
 import { UserActionContext } from '../context/UserActionContext';
 import Tiptap from './Tiptap';
 import useTypingStatus from '../hook/useTypingStatus';
+import UserImage from './UserImage';
 
 export default function ChatContainer() {
     const { authUser, isLoading } = useContext(AuthContext);
-    const { fetchDeleteRule, deleteRule, setDeleteRule, changeDeleteRule, deleteMessages, } = useContext(UserActionContext)
+    const { fetchDeleteRule, deleteRule, setDeleteRule, changeDeleteRule, deleteMessages, setShowUserDtMdl } = useContext(UserActionContext)
     const { messages, selectedUser, sendMessages, getMessages, setSelectedUser, setTriggerSearch, unseenMessages } = useContext(ChatContext)
     const { socket } = useContext(AuthContext)
     const [currTab, setCurrTab] = useState('Chat')
@@ -151,10 +152,7 @@ export default function ChatContainer() {
                         <div className='flex items-center justify-between'>
                             <div className='flex items-center justify-start gap-3'>
                                 <button onClick={() => setSelectedUser(null)} className='bg-[#0a0a0a] w-10 aspect-square rounded-full group'><i className="fa-solid fa-arrow-left group-hover:-translate-x-0.5 transition-transform duration-200"></i></button>
-                                <div className='w-fit relative cursor-pointer'>
-                                    <img src={selectedUser?.profilePic || assets.avatar_icon} alt="" className={`w-9 h-9 rounded-full`} />
-                                    <OnlineBullet size={2.5} state={`${selectedUser?.isOnlineVisible ? 'online' : 'offline'}`} />
-                                </div>
+                                <UserImage fontSz='15' user={selectedUser} size={2.5} clickFunc={() => setShowUserDtMdl(true)} />
                                 <span className='font-bold text-xl'>{selectedUser?.fullName || selectedUser._id}</span>
                                 <div>
                                     <Select
@@ -235,10 +233,9 @@ export default function ChatContainer() {
                         </div>
                         {/* ---Field--- */}
                         <div className='flex-grow-1 p-2 px-5 flex relative flex-col'>
-                            <div className='block'>
-                                {/* <div className="text-[11px] -mt-2 text-gray-300 pl-1 py-[4px] -mb-0.5 bg-[#191919]">{selectedUser.fullName} is typing...</div> */}
+                            <div className='block overflow-hidden'>
                                 {isTyping && (
-                                    <div className="text-[11px] -mt-2 text-gray-300 pl-1 py-[4px] -mb-0.5 bg-[#191919]">{selectedUser.fullName} is typing...</div>
+                                    <div className={`text-[11px] -mt-1 text-gray-300 pl-1 py-[4px] -mb-0.5 bg-[#191919]`}>{selectedUser.fullName.split(' ')[0]} is typing...</div>
                                 )}
                             </div>
                             <div className='flex-grow-1 flex relative'>

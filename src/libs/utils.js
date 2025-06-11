@@ -5,8 +5,23 @@ export const formateTime = (data) => {
         hour12: true,
     })
 }
+export const formateDate = (data) => {
+    return new Date(data).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+}
 
+export const getInitialsFromName = (name = '') => {
+    if (!name.trim()) return '';
 
+    const words = name.trim().split(/\s+/); // split by any whitespace
+    const firstTwo = words.slice(0, 2);
+    const initials = firstTwo.map(word => word.charAt(0).toUpperCase()).join('');
+
+    return initials;
+};
 
 export const stripHtml = (html) => {
     const div = document.createElement("div");
