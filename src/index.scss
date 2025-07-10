@@ -216,11 +216,22 @@ a {
 
     .ant-collapse-item-active {
         .ant-collapse-expand-icon {
-            svg {rotate: 90deg;}
+            svg {
+                rotate: 90deg;
+            }
         }
     }
 
     &.ant-collapse .ant-collapse-content>.ant-collapse-content-box {
         padding: 0;
+    }
+}
+
+@media (min-width:1025px) {
+    .head-dd-margin-remove {
+        padding-block: 0 !important;
+    }
+    .last-divider {
+        display: none !important;
     }
 }

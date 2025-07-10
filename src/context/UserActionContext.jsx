@@ -33,29 +33,40 @@ export const UserActionProvider = ({ children }) => {
   const [showOnline, setShowOnline] = useState(true);
   const [showRptMdl, setShowRptMdl] = useState(true);
   const [showUserDtMdl, setShowUserDtMdl] = useState(false);
-  const [pinnedUser, setPinnedUser] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const local = localStorage.getItem("pinnedUser");
-      return local ? JSON.parse(local) : [];
+  const [pinnedUser, setPinnedUser] = useState([]);
+
+  // Helper to get the correct key
+  const getStorageKey = (userId) => `pinnedUser:${userId}`;
+
+  // Load pinned users when authUser is ready
+  useEffect(() => {
+    if (typeof window !== 'undefined' && authUser?._id) {
+      const key = getStorageKey(authUser._id);
+      const saved = localStorage.getItem(key);
+      setPinnedUser(saved ? JSON.parse(saved) : []);
     }
-    return [];
-  });
-  // Save to localStorage whenever updated
+  }, [authUser?._id]);
+
+  // Save to localStorage whenever pinnedUser updates
   const updatePinnedUser = (list) => {
     setPinnedUser(list);
-    localStorage.setItem("pinnedUser", JSON.stringify(list));
+    if (authUser?._id) {
+      const key = getStorageKey(authUser._id);
+      localStorage.setItem(key, JSON.stringify(list));
+    }
   };
+
   const pinUser = (userId) => {
     if (!pinnedUser.includes(userId)) {
       updatePinnedUser([...pinnedUser, userId]);
     }
   };
 
-  // Unpin user
   const unpinUser = (userId) => {
-    const updated = pinnedUser.filter(id => id !== userId);
+    const updated = pinnedUser.filter((id) => id !== userId);
     updatePinnedUser(updated);
   };
+
 
   const changeOnlineStatus = async (bool) => {
     try {

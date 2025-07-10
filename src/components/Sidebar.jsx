@@ -56,7 +56,7 @@ export default function Sidebar() {
 
     return (
         <div className='h-full'>
-            <div className="p-5 flex flex-col h-full max-w-[480px]">
+            <div className="p-5 hidden lg:flex flex-col h-full max-w-[480px]">
                 <div className='flex items-center'>
                     {/*                     <img src={assets.mainLogo} alt="" className='max-w-10' /> */}
                     <span className='font-bold ml-4 text-xl'>Chat</span>

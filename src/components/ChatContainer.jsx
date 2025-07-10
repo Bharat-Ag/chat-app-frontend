@@ -1,15 +1,15 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import assets from "../assets/assets";
 import { extractLinks, formateTime } from '../libs/utils';
 import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import toast from 'react-hot-toast';
-import { OnlineBullet } from '../assets/Icons/CustomIcon';
-import { Select, Tooltip } from 'antd';
+import { Select } from 'antd';
 import { UserActionContext } from '../context/UserActionContext';
 import Tiptap from './Tiptap';
 import useTypingStatus from '../hook/useTypingStatus';
 import UserImage from './UserImage';
+import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 export default function ChatContainer() {
     const { authUser, isLoading } = useContext(AuthContext);
@@ -127,16 +127,16 @@ export default function ChatContainer() {
         setSharedLinks(links);
     }, [messages]);
 
-    useEffect(() => {
-        document.title = selectedUser
-            ? `${unseenMessages && unseenMessages.length > 1 ? 'N' : ""} ${selectedUser.fullName} | Chit-Chat`
-            : 'Chit-Chat';
-    }, [selectedUser, unseenMessages]);
+    // useEffect(() => {
+    //     document.title = selectedUser
+    //         ? `${unseenMessages && unseenMessages.length > 1 ? 'N' : ""} ${selectedUser.fullName} | Chit-Chat`
+    //         : 'Chit-Chat';
+    // }, [selectedUser, unseenMessages]);
 
     if (isLoading) {
         return (
             <div className="h-full pb-3">
-                <div className='bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg flex justify-center items-center'>
+                <div className='bg-[#191919] h-[calc(100dvh-58px)] lg:h-[calc(100dvh-58px-10px)] rounded-lg flex justify-center items-center'>
                     <div className="loader">Loading...</div>
                 </div>
             </div>
@@ -146,7 +146,7 @@ export default function ChatContainer() {
     return selectedUser ? (
         <>
             <div className='h-full pb-3'>
-                <div className='bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg flex flex-col'>
+                <div className='bg-[#191919] h-[calc(100dvh-58px)] lg:h-[calc(100dvh-58px-10px)] rounded-lg flex flex-col'>
                     <div className='p-3 px-5 border-b-1 border-white/15'>
                         {/* ---header--- */}
                         <div className='flex items-center justify-between'>
@@ -200,32 +200,39 @@ export default function ChatContainer() {
                             {messages?.map((msg, index) => {
                                 return (
                                     <div key={index}>
-                                        <div>
-                                            <div className={`flex items-end gap-2 justify-end ${msg.senderId !== authUser._id && 'flex-row-reverse'}`}>
-                                                <div className={`msg-show-box p-2 md:max-w-[550px] xl:max-w-[700px] md:text-sm font-light rounded-lg mb-8 break-all  text-white word ${msg.senderId === authUser._id ? 'rounded-br-none bg-[#7d44f8]' : 'rounded-bl-none bg-[#2a2a2a]'}`}>
-                                                    {msg.image && (
-                                                        <img
-                                                            src={msg.image}
-                                                            alt=""
-                                                            className="max-w-[230px] mb-2 border border-gray-700 rounded-lg outline-hidden"
-                                                        />
-                                                    )}
+                                        <div className=' mb-8 '>
+                                            <div className={`flex items-start gap-2 justify-end ${msg.senderId !== authUser._id && 'flex-row-reverse'}`}>
+                                                <div className={`flex flex-wrap gap-2 ${msg.senderId === authUser._id && 'flex-row-reverse'} group `}>
+                                                    <div className={`msg-show-box p-2 md:max-w-[550px] xl:max-w-[700px] md:text-sm font-light rounded-lg break-all  text-white word ${msg.senderId === authUser._id ? 'bg-[#7d44f8]' : ' bg-[#2a2a2a]'}`}>
+                                                        {msg.image && (
+                                                            <img
+                                                                src={msg.image}
+                                                                alt=""
+                                                                className="max-w-[230px] mb-2 border border-gray-700 rounded-lg outline-hidden"
+                                                            />
+                                                        )}
 
-                                                    {msg.text && (
-                                                        <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
-                                                    )}
+                                                        {msg.text && (
+                                                            <p dangerouslySetInnerHTML={{ __html: msg.text }}></p>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-gray-500 mt-2 text-[12px] opacity-0 group-hover:opacity-100">{formateTime(msg.createdAt)}</p>
                                                 </div>
-                                                <div className="text-center text-xs">
-                                                    <img
-                                                        src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon}
-                                                        alt=""
-                                                        className={`aspect-square rounded-full w-7 overflow-hidden ${msg.senderId !== authUser._id && 'ml-auto'}`}
-                                                    />
-                                                    <p className="text-gray-500 mt-2">{formateTime(msg.createdAt)}</p>
+                                                <div className="text-center text-xs self-end">
+                                                    {
+                                                        msg.senderId !== authUser._id ? (
+                                                            <img
+                                                                src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon}
+                                                                alt=""
+                                                                className={`aspect-square rounded-full w-7 overflow-hidden ${msg.senderId !== authUser._id && 'ml-auto'}`}
+                                                            />
+                                                        ) : (<>
+                                                            <span className='block'><IoCheckmarkDoneOutline className={`${!msg.seen ? '' : 'text-blue-400'}`} /></span>
+                                                        </>)
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 );
                             })}
@@ -305,7 +312,7 @@ export default function ChatContainer() {
     ) : (
         <>
             <div className='h-full pb-3'>
-                <div className='bg-[#191919] md:h-[calc(100dvh-58px-10px)] rounded-lg'>
+                <div className='bg-[#191919] h-[calc(100dvh-58px)] lg:h-[calc(100dvh-58px-10px)] rounded-lg'>
                     <div className='flex items-center justify-center h-full'>
                         <button onClick={() => setTriggerSearch(true)} className=' bg-blue-400 w-fit rounded-full py-3 px-8 text-lg hover:bg-blue-500 transition-colors duration-150 font-semibold tracking-wide'>Start Chat</button>
                     </div>
