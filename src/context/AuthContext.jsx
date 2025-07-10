@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(null);
         setOnlineUser([]);
         axios.defaults.headers.common['token'] = null;
-        toast.success('Nikal Lau*e pehle fursat me', { duration: 3000 })
+        toast.success('Chal daffa ho', { duration: 3000 })
         socket.disconnect();
     }
 
