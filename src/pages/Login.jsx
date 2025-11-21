@@ -30,34 +30,34 @@ export default function Login() {
         // LOGIN validation
         if (currSt === 'Login') {
             if (!values.email) {
-                errors.email = "Email bharna";
+                errors.email = "Enter Email";
             } else if (!emailRegex.test(values.email)) {
-                errors.email = "Email daalna bhi sikhana padega";
+                errors.email = "Email is incorrect";
             }
 
             if (!values.password) {
-                errors.password = "Ye bhi daal dalle";
+                errors.password = "Enter Password";
             } else if (values.password.length < 6) {
-                errors.password = "lamba daal apne andar 6'";
+                errors.password = "Min Length 6";
             }
         }
 
         // SIGNUP step 1 (before bio)
         if (currSt === 'Sign Up' && !isDataSubmitted) {
             if (!values.fullName) {
-                errors.fullName = "Baap ne mana kia h naam daalne ko?";
+                errors.fullName = "Enter Full Name";
             }
 
             if (!values.email) {
-                errors.email = "Email bharna";
+                errors.email = "Enter Email";
             } else if (!emailRegex.test(values.email)) {
-                errors.email = "Email daalna bhi sikhana padega";
+                errors.email = "Email is incorrect";
             }
 
             if (!values.password) {
-                errors.password = "Ye bhi daal dalle";
+                errors.password = "Enter Password";
             } else if (values.password.length < 6) {
-                errors.password = "lamba daal apne andar 6'";
+                errors.password = "Min Length 6";
             }
         }
 
@@ -109,13 +109,13 @@ export default function Login() {
                             <div className="hidden sm:flex flex-col justify-center items-center text-white text-center p-3">
                                 <h2 className="text-2xl font-bold">
                                     {currSt === 'Login'
-                                        ? 'Bina login k chat hi nai kr skta'
-                                        : "Tujhe login krna hi padega dost kuch bhi krle"}
+                                        ? 'use => test@test.com | 123456'
+                                        : "Please login first"}
                                 </h2>
                                 <p className="text-md my-4">
                                     {currSt === 'Sign Up'
-                                        ? 'Login kar suar ab'
-                                        : "Account nahi hai toh bana na bkl"}
+                                        ? 'use => test@test.com | 123456'
+                                        : "Create Account First"}
                                 </p>
                                 <button
                                     type="button"
