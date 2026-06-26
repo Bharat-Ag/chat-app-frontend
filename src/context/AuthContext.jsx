@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client"
 import AuthService from "../services/api/auth.services";
 import Userservices from "../services/api/user.services";
-// import { generateToken } from "../libs/firebase";
+import { generateToken } from "../libs/firebase";
 
 export const AuthContext = createContext();
 
@@ -117,8 +117,24 @@ export const AuthProvider = ({ children }) => {
         checkAuth()
     }, [])
 
+    // Once authenticated, request a push token and persist it so the server can
+    // send notifications when the app/tab is fully closed.
+    useEffect(() => {
+        const registerPush = async () => {
+            if (!authUser?._id || !token) return;
+            const fcmToken = await generateToken();
+            if (!fcmToken) return;
+            try {
+                await axios.post("/api/auth/save-fcm-token", { fcmToken }, { headers: { token } });
+            } catch (error) {
+                console.error("Failed to save FCM token:", error.message);
+            }
+        };
+        registerPush();
+    }, [authUser?._id, token])
+
     const value = {
-        axios, authUser, onlineUser, socket, token, isLoading, setLoading,
+        axios, authUser, setAuthUser, onlineUser, socket, token, isLoading, setLoading,
         login, logout, updateProfile, changePass, onlineVisibilityMap
     }
     return (

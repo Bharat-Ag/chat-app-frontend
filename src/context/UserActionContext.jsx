@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 export const UserActionContext = createContext();
 
 export const UserActionProvider = ({ children }) => {
-  const { authUser, token, axios, socket } = useContext(AuthContext);
+  const { authUser, setAuthUser, token, axios, socket } = useContext(AuthContext);
   const [deleteRule, setDeleteRule] = useState('');
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
@@ -84,6 +84,7 @@ export const UserActionProvider = ({ children }) => {
       );
       if (data.success) {
         setShowOnline(data.status);
+        setAuthUser((prev) => ({ ...prev, isOnlineVisible: data.status }));
       }
     } catch (error) {
       toast.error(error.message);
@@ -192,7 +193,7 @@ export const UserActionProvider = ({ children }) => {
     if (token && authUser?._id && isSocketConnected) {
       changeOnlineStatus(true);
     }
-  }, [token, authUser, isSocketConnected]);
+  }, [token, authUser?._id, isSocketConnected]);
 
   const value = {
     changePassMdl,

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect } from "react";
 import { useState } from "react";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
+import { showBrowserNotification, messagePreview } from "../libs/notify";
 
 export const ChatContext = createContext();
 
@@ -73,7 +74,9 @@ export const ChatProvider = ({ children }) => {
         if (!socket) return;
 
         socket.on('newMessage', (newMessage) => {
-            if (selectedUser && newMessage.senderId === selectedUser._id) {
+            const isActiveChat = selectedUser && newMessage.senderId === selectedUser._id;
+
+            if (isActiveChat) {
                 newMessage.seen = true;
                 setMessages((prev) => [...prev, newMessage]);
                 axios.put(`/api/messages/mark/${newMessage._id}`);
@@ -83,6 +86,20 @@ export const ChatProvider = ({ children }) => {
                     ...prev, [newMessage.senderId]:
                         prev[newMessage.senderId] ? prev[newMessage.senderId] + 1 : 1
                 }))
+            }
+
+            // notification: show when not in this chat, OR when the
+            // user has switched away from the browser entirely (even if the tab is
+            // still active — document.hidden stays false in that case, but
+            // document.hasFocus() correctly returns false the moment focus leaves).
+            if (!isActiveChat || !document.hasFocus()) {
+                const sender = users.find((u) => u._id === newMessage.senderId);
+                showBrowserNotification({
+                    title: sender?.fullName || "New message",
+                    body: messagePreview(newMessage),
+                    icon: sender?.profilePic || undefined,
+                    onClick: () => sender && setSelectedUser(sender),
+                });
             }
         })
     }
@@ -98,8 +115,21 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         subscribeToMessage();
         return () => unSubscribeToMessage();
-
     }, [socket, selectedUser])
+
+    // When user clicks an FCM push notification while the app is open in the
+    // background, the service worker posts OPEN_CHAT so we navigate to the right chat.
+    useEffect(() => {
+        if (!("serviceWorker" in navigator)) return;
+        const handleSwMessage = (event) => {
+            if (event.data?.type === "OPEN_CHAT") {
+                const sender = users.find((u) => u._id === event.data.senderId);
+                if (sender) setSelectedUser(sender);
+            }
+        };
+        navigator.serviceWorker.addEventListener("message", handleSwMessage);
+        return () => navigator.serviceWorker.removeEventListener("message", handleSwMessage);
+    }, [users])
 
 
     useEffect(() => {

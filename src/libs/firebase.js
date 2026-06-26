@@ -3,13 +3,13 @@ import { getMessaging, getToken } from "firebase/messaging"
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDmXvEh8ndIVy96r-jUtP52IR0qOuNEJWc",
-  authDomain: "chit-chat-f9040.firebaseapp.com",
-  projectId: "chit-chat-f9040",
-  storageBucket: "chit-chat-f9040.firebasestorage.app",
-  messagingSenderId: "455699463992",
-  appId: "1:455699463992:web:a2716d546625156c7acbcd",
-  measurementId: "G-SZTP701FBF"
+  apiKey: "AIzaSyCbX8X2R5ak0H4hQPvq8H5nnvAEKiqS6xI",
+  authDomain: "chit-chat-feb8c.firebaseapp.com",
+  projectId: "chit-chat-feb8c",
+  storageBucket: "chit-chat-feb8c.firebasestorage.app",
+  messagingSenderId: "299190691975",
+  appId: "1:299190691975:web:d6217919d8cbe89a463022",
+  measurementId: "G-0J9L018GQE"
 };
 
 
@@ -18,16 +18,22 @@ export const messaging = () => getMessaging(app)
 
 export const generateToken = async () => {
   try {
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const token = await getToken(messaging(app), {
-        vapidKey: "BAz2JF6gKcbo-dlCs-9pTcWvC5pxGbkMqAYauTm_RPqkSRcya88TW1Jehh1MYNC-aIegGj0LjtChHN2BvtuU7dI",
-        serviceWorkerRegistration: await navigator.serviceWorker.ready
-      });
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return null;
 
-      return token
-    }
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return null;
+
+    // Make sure our messaging service worker is registered before asking for a token.
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+    const token = await getToken(messaging(app), {
+      vapidKey: "BItNMUT9HxJVYIjPkZ1vB5bk6WCmLtGu3BvgVO_Nr_EICNBWY3CIfaC0g1X-3l_XdVp49fzK3-dWgCEawOaCJfY",
+      serviceWorkerRegistration: registration
+    });
+
+    return token;
   } catch (error) {
     console.error('Token generation error:', error);
+    return null;
   }
 }

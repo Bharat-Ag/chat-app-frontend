@@ -136,7 +136,7 @@ export default function HomePage() {
                                         >
                                             <Switch
                                                 className='onlineSwitch'
-                                                value={showOnline}
+                                                checked={showOnline}
                                                 onChange={handleSwitchChange}
                                             />
                                         </div>

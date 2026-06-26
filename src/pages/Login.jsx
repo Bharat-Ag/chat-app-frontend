@@ -6,7 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 export default function Login() {
     // const { changeOnlineStatus } = useContext(UserActionContext);
-    const [currSt, setCurrSt] = useState('Sign Up');
+    const [currSt, setCurrSt] = useState('Login');
     const [isDataSubmitted, setIsDataSubmitted] = useState(false);
     const { login } = useContext(AuthContext);
     const toggleState = (resetForm) => {
@@ -32,32 +32,32 @@ export default function Login() {
             if (!values.email) {
                 errors.email = "Email bharna";
             } else if (!emailRegex.test(values.email)) {
-                errors.email = "Email daalna bhi sikhana padega";
+                errors.email = "Enter correct email";
             }
 
             if (!values.password) {
                 errors.password = "Ye bhi daal dalle";
             } else if (values.password.length < 6) {
-                errors.password = "lamba daal apne andar 6'";
+                errors.password = "min 6 character needed";
             }
         }
 
         // SIGNUP step 1 (before bio)
         if (currSt === 'Sign Up' && !isDataSubmitted) {
             if (!values.fullName) {
-                errors.fullName = "Baap ne mana kia h naam daalne ko?";
+                errors.fullName = "Enter name";
             }
 
             if (!values.email) {
                 errors.email = "Email bharna";
             } else if (!emailRegex.test(values.email)) {
-                errors.email = "Email daalna bhi sikhana padega";
+                errors.email = "Enter correct email";
             }
 
             if (!values.password) {
                 errors.password = "Ye bhi daal dalle";
             } else if (values.password.length < 6) {
-                errors.password = "lamba daal apne andar 6'";
+                errors.password = "min 6 character needed";
             }
         }
 
@@ -109,13 +109,13 @@ export default function Login() {
                             <div className="hidden sm:flex flex-col justify-center items-center text-white text-center p-3">
                                 <h2 className="text-2xl font-bold">
                                     {currSt === 'Login'
-                                        ? 'Bina login k chat hi nai kr skta'
+                                        ? 'Login | test@test.com | 123456'
                                         : "Tujhe login krna hi padega dost kuch bhi krle"}
                                 </h2>
                                 <p className="text-md my-4">
                                     {currSt === 'Sign Up'
-                                        ? 'Login kar suar ab'
-                                        : "Account nahi hai toh bana na bkl"}
+                                        ? 'Sign up page'
+                                        : "Create account if its not present"}
                                 </p>
                                 <button
                                     type="button"
