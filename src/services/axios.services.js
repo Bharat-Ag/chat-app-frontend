@@ -14,7 +14,6 @@ class AxiosService {
       Accept: "application/json",
       AppVersion: "1",
       AcceptLanguage: "en",
-      deviceType: "web",
     };
     if (accessToken) {
       header["x-access-token"] = accessToken;
