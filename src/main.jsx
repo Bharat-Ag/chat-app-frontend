@@ -6,15 +6,18 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ChatProvider } from './context/ChatContext.jsx'
 import { UserActionProvider } from './context/UserActionContext.jsx'
+import SessionProviderMain from './provider/SessionProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <AuthProvider>
-      <UserActionProvider>
-        <ChatProvider>
-          <App />
-        </ChatProvider>
-      </UserActionProvider>
-    </AuthProvider>
+    <SessionProviderMain>
+      <AuthProvider>
+        <UserActionProvider>
+          <ChatProvider>
+            <App />
+          </ChatProvider>
+        </UserActionProvider>
+      </AuthProvider>
+    </SessionProviderMain>
   </BrowserRouter>,
 )

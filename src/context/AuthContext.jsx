@@ -3,10 +3,11 @@ import axios from "axios"
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client"
+import AuthService from "../services/api/auth.services";
+import Userservices from "../services/api/user.services";
 // import { generateToken } from "../libs/firebase";
 
 export const AuthContext = createContext();
-
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.baseURL = backendUrl;
@@ -17,26 +18,29 @@ export const AuthProvider = ({ children }) => {
     const [onlineUser, setOnlineUser] = useState([]);
     const [socket, setSocket] = useState(null);
     const [onlineVisibilityMap, setOnlineVisibilityMap] = useState({});
-    const [isLoading, setLoading] = useState(false)
+    const [isLoading, setLoading] = useState(false);
 
+    const headers = {
+        "x-access-token": token,
+    };
     const checkAuth = async () => {
         try {
-
-            const { data } = await axios.get("/api/auth/check");
-            if (data.success) {
-                setAuthUser(data.user)
-                connectSocket(data.user)
+            const res = await AuthService.CheckAuth(headers);
+            const { data } = res || {}
+            if (data?.success) {
+                setAuthUser(data.user);
+                connectSocket(data.user);
             }
-
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.message || "Auth check failed");
         }
-    }
+    };
 
     const login = async (state, credentials) => {
         try {
 
-            const { data } = await axios.post(`/api/auth/${state}`, credentials)
+            const { data } = await AuthService.PostLogin(state, credentials)
+
             if (data.success) {
                 setAuthUser(data.userData)
                 connectSocket(data.userData)
@@ -51,7 +55,6 @@ export const AuthProvider = ({ children }) => {
 
         } catch (error) {
             toast.error(error.message)
-
         }
     }
 
@@ -65,9 +68,9 @@ export const AuthProvider = ({ children }) => {
         socket.disconnect();
     }
 
-    const updateProfile = async (body) => {
+    const updateProfile = async (params) => {
         try {
-            const { data } = await axios.put(`/api/auth/update-profile`, body)
+            const { data } = await Userservices.UpdateProfile(params, headers)
             if (data.success) {
                 setAuthUser(data.user)
                 toast.success('Profile Updated')
@@ -79,10 +82,8 @@ export const AuthProvider = ({ children }) => {
     }
     const changePass = async (body) => {
         try {
-            const { data } = await axios.put(`/api/auth/reset-password`, body)
-            if (data.success) {
-                toast.success('Password Updated')
-            }
+            const { data } = await AuthService.PostResetPassword(body, headers)
+            if (data.success) toast.success('Password Updated')
 
         } catch (error) {
             toast.error(error.message)
