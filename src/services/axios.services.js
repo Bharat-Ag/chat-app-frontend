@@ -11,12 +11,10 @@ class AxiosService {
     const accessToken =
       typeof window !== "undefined" && localStorage.getItem("token");
     var header = {
-      Accept: "application/json",
-      AppVersion: "1",
-      AcceptLanguage: "en",
+      "Content-Type": "application/json",
     };
     if (accessToken) {
-      header["x-access-token"] = accessToken;
+      header["token"] = accessToken;
     }
     return header;
   };
